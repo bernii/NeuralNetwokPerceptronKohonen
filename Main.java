@@ -1,62 +1,57 @@
-
-
 /**
  *
  * @author Berni
  */
-public class Main {
-    
-    /** Creates a new instance of Main */
-    public Main() {
-    }
-    
+public class Main {    
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-    	double[][] arrx = {{0,1,1},{1,1,1},{1,0,1},{0,0,0}};
-        Matrix X = new Matrix(arrx);
-        System.out.println("X = \n"+X.print()) ;
+    public static void main(final String[] args) {
+//    	double[][] arrx = {{0, 1, 1}, {1, 1, 1}, {1, 0, 1}, {0, 0, 0}};
+    	double[][] arrx = {{0, 0.05, 0.05}, {0,0, 0.25}, {0.5, 0, 0.5}, {0.6, 0.4, 0}};
+        Matrix x = new Matrix(arrx);
+        System.out.println("X = \n" + x.print());
          System.out.println("Firtst column from X:");
-         Matrix firX = X.getColumn(0); ;
-         System.out.println("firX = \n"+firX.print()) ;
+         Matrix firX = x.getColumn(0);
+         System.out.println("firX = \n" + firX.print());
          
-         double[][] arry = {{0,1},{1,1},{1,0},{0,0}};
-         Matrix Y = new Matrix(arry);
-         System.out.println("Y = \n"+Y.print()) ;
+//         double[][] arry = {{0, 31}, {1, 1}, {1, 0}, {0, 0}};
+         double[][] arry = {{0.1}, {0.25}, {1}, {1}};
+         Matrix y = new Matrix(arry);
+         System.out.println("Y = \n" + y.print());
          System.out.println("Firtst column from Y:");
-         Matrix firY = Y.getColumn(0);
-         System.out.println("firY = \n"+firY.print()) ;
-         PerceptronBuilder net = new PerceptronBuilder() ;
+         Matrix firY = y.getColumn(0);
+         System.out.println("firY = \n" + firY.print());
+         PerceptronBuilder net = new PerceptronBuilder();
          
-         net.makeNetwok(X.getHeigth()+"-22-"+Y.getHeigth());
-         System.out.println(net.printLay(0)) ;
+         net.makeNetwok(x.getHeigth() + "-6-" + y.getHeigth());
+         System.out.println(net.printLay(0));
 //         System.out.println("After multiplication - y(0):\n");
 //         Matrix y0 = Matrix.multiplication(net.getLay(0), fir,true) ;
 //         System.out.println(y0.print());
 //         System.out.println(net.printLay(1)) ;
 //
-//         System.out.println("Before learin - first lay:\n");
+//         System.out.println("Before learnin - first lay:\n");
 //         System.out.println(net.printLay(0)) ;
 //         System.out.println("Computed results:\n");
 //         net.computeResults(firX) ;
 //         System.out.println(net.getComputedResults(1).print());
 //         
-//         System.out.println("Obliczone sumy se:\n"+net.getComputedSums(0).print());
+//         System.out.println("SUMS :\n"+net.getComputedSums(0).print());
 //         System.out.println(net.getComputedSums(1).print());
 //         
-//         System.out.println("After learin - first lay:\n");
+//         System.out.println("After learnin - first lay:\n");
 //         System.out.println(net.printLay(0)) ;
          
-         float max = (float)Y.findMaxValue() ;
-         float min = (float)Y.findMinValue() ;
-         net.setOutputMinMax(min,max);
-         net.setEpchos(6000) ;
-         net.start_learning(X, Y);
+         double max = y.findMaxValue();
+         double min = y.findMinValue();
+         net.setOutputMinMax(min, max);
+         net.setEpchos(6000);
+         net.start_learning(x, y);
          
-         System.out.print("Target outputs:\n"+Y.print());
-         Matrix out = net.getOutput(X,min,max) ;
-         System.out.println("Computed outputs:\n"+out.print());
+         System.out.print("Target outputs:\n" + y.print());
+         Matrix out = net.getOutput(x, min, max);
+         System.out.println("Computed outputs:\n" + out.print());
          
          /**
           * Kohonen test

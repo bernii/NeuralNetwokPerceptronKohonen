@@ -79,17 +79,16 @@ public class SwtGUI {
 					// TODO Auto-generated catch block
 					//e1.printStackTrace();
 				}
-				display.syncExec(new Runnable(){
-					public void run()
-					{
-						start = false ;
+				display.syncExec(new Runnable() {
+					public void run() {
+						start = false;
 					}
 				});
 
-				int neurWidth = Integer.parseInt(""+textWidth.getText()) ;
-				int neurHeigth = Integer.parseInt(""+textHeigth.getText()) ;
-				kohNet.makeNetwork(2,neurWidth,neurHeigth) ;
-				canvas.redraw() ;
+				int neurWidth = Integer.parseInt("" + textWidth.getText());
+				int neurHeigth = Integer.parseInt("" + textHeigth.getText());
+				kohNet.makeNetwork(2, neurWidth, neurHeigth);
+				canvas.redraw();
 
 
 			}
@@ -98,19 +97,18 @@ public class SwtGUI {
 			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
 				try {
 					update.wait();
-					display.sleep() ;
-					start = false ;
+					display.sleep();
+					start = false;
 
-					display.wake() ;
-					update.destroy() ;
+					display.wake();
+					update.destroy();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					//e1.printStackTrace();
 				}
-				display.syncExec(new Runnable(){
-					public void run()
-					{
-						start = false ;
+				display.syncExec(new Runnable() {
+					public void run() {
+						start = false;
 					}
 				});
 
@@ -119,33 +117,31 @@ public class SwtGUI {
 		buttonNextStep
 		.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
 			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
-				if(isOneNeuron){
-					int steps = Integer.parseInt(""+textNumOfEpchos.getText()) ;
-					start = true ;
-					update = new Thread(){
-						public void run()
-						{
-							kohNet.start_learning(Koh) ;
-							canvas.redraw() ;
-							textLambda.setText(""+kohNet.lambda);
+				if (isOneNeuron) {
+					int steps = Integer.parseInt("" + textNumOfEpchos.getText()) ;
+					start = true;
+					update = new Thread() {
+						public void run() {
+							kohNet.start_learning(Koh);
+							canvas.redraw();
+							textLambda.setText("" + kohNet.lambda);
 						}
-					} ;
+					};
 
-					for(int i =0 ; i< steps &&start==true ; i++){
+					for (int i = 0; i < steps && start == true; i++) {
 						display.asyncExec(update);
 					}
-				}
-				else
+				} else {
 					labelCreateFirst.setVisible(true);
-
+				}
 			}
 		});
 	}
 
 	private static int[] polygonCoord(double xx,double yy){
-		int x = (int) (500*xx) ;
-		int y = (int) (500*yy) ;
-		return new int[] { x-5,y-5,x,y,x+5,y-5 } ;
+		int x = (int) (500 * xx) ;
+		int y = (int) (500 * yy) ;
+		return new int[] { x - 5, y - 5, x, y, x + 5, y - 5};
 	}
 	/**
 	 * This method initializes canvas	
@@ -155,50 +151,52 @@ public class SwtGUI {
 	public static boolean isOneNeuron = false ;
 	private void createCanvas() {
 		canvas = new Canvas(composite, SWT.NONE);
-		canvas.setBounds(new org.eclipse.swt.graphics.Rectangle(5,23,300,300));
+		canvas.setBounds(new org.eclipse.swt.graphics.Rectangle(5, 23, 300, 300));
 		canvas.addPaintListener(new org.eclipse.swt.events.PaintListener() {
 			public void paintControl(org.eclipse.swt.events.PaintEvent e) {
-				if(isOneNeuron==false)
-					return ;
-				liczba_neuronow = kohNet.neurons.getHeigth() ;
-				for(int i=0;i<Koh.getWidth();i++){
-					int x = (int)(500*Koh.getValue(i,0)) ;
-					int y = (int)(500*Koh.getValue(i,1)) ;
-					e.gc.drawOval(x,y,3,3);
+				if (isOneNeuron == false)
+					return;
+				liczba_neuronow = kohNet.neurons.getHeigth();
+				for (int i = 0; i < Koh.getWidth(); i++) {
+					int x = (int)(500 * Koh.getValue(i, 0));
+					int y = (int)(500 * Koh.getValue(i, 1));
+					e.gc.drawOval(x, y, 3, 3);
 				}
 
-				for(int i=0 ; i<liczba_neuronow;i++){
-					e.gc.drawPolygon(polygonCoord(kohNet.neurons.getValue(0,i),kohNet.neurons.getValue(1,i)));
+				for (int i = 0; i < liczba_neuronow; i++) {
+					e.gc.drawPolygon(polygonCoord(
+							kohNet.neurons.getValue(0, i),
+							kohNet.neurons.getValue(1, i)));
 				}
 			}
 		});
 		canvas.addMouseListener(new org.eclipse.swt.events.MouseAdapter() {
 			public void mouseDown(org.eclipse.swt.events.MouseEvent e) {
 				labelCreateFirst.setVisible(false);
-				if(!isOneNeuron){
-					int neurWidth = Integer.parseInt(""+textWidth.getText()) ;
-					int neurHeigth = Integer.parseInt(""+textHeigth.getText()) ;
-					kohNet.makeNetwork(2,neurWidth,neurHeigth) ;
+				if (!isOneNeuron) {
+					int neurWidth = Integer.parseInt("" + textWidth.getText());
+					int neurHeigth = Integer.parseInt("" + textHeigth.getText());
+					kohNet.makeNetwork(2, neurWidth, neurHeigth);
 				}
-				double arr[][] = null ;
-				int i =0;
-				if(Koh==null) {
+				double[][] arr = null;
+				int i = 0;
+				if (Koh == null) {
 					arr = new double[1][];
 				} else {
-					arr = new double[Koh.array.length+1][2];
-					for(i =0 ; i < Koh.array.length ; i++){
+					arr = new double[Koh.array.length + 1][2];
+					for (i = 0; i < Koh.array.length; i++) {
 						arr[i] = Koh.array[i];
 					}
 				}
-				float x = (float) (e.x*Math.pow(500,-1));
-				float y = (float) (e.y*Math.pow(500,-1));
-				double[] a = {x,y};
-				arr[i] = a ;
+				float x = (float) (e.x * Math.pow(500, -1));
+				float y = (float) (e.y * Math.pow(500, -1));
+				double[] a = {x, y};
+				arr[i] = a;
 				Koh = new Matrix(arr);
-				System.out.println("Koh network:\n"+Koh.print());
-				canvas.redraw() ;
-				isOneNeuron = true ;
-				System.out.println("mouseDown() x="+x+" y="+y); 
+				System.out.println("Koh network:\n" + Koh.print());
+				canvas.redraw();
+				isOneNeuron = true;
+				System.out.println("mouseDown() x=" + x + " y=" + y); 
 			}
 		});
 	}
@@ -263,21 +261,12 @@ public class SwtGUI {
 		 *       installation_directory\plugins\org.eclipse.swt.win32_3.1.0.jar
 		 */
 		display = new Display();
-
-		//		Koh = Matrix.createByCols("22 22"); 
-		//        Koh = Koh.transpose() ;
-		//        System.out.println("Koh transposed:\n"+Koh.print()) ;
-		//        Koh = Koh.transpose() ;
-		//        //Koh = Matrix.createByCols(kohTemp);
-		//        System.out.println("Koh after:\n"+Koh.print()) ;
-		//        sumRoot = Koh.normalizeKohonen() ;
-		//        System.out.println("Koh normalized:\n"+Koh.print()) ;
 		float min=(float) 0.013882493 ; // quite good neurons spread
 		float max=(float) 0.6293397 ;
 		kohNet = new KohonenBuilder() ;
 		//     System.out.println("Min="+Koh.findMinValue()+" max="+Koh.findMaxValue());
 		kohNet.setWeightsMinMax(min,max);
-		kohNet.setEpchosNumber(Integer.parseInt("1")) ; 
+		kohNet.setEpchosNumber(Integer.parseInt("1")); 
 
 		SwtGUI thisClass = new SwtGUI();
 		thisClass.createSShell();

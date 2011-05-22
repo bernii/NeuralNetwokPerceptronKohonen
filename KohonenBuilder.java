@@ -12,32 +12,32 @@ public class KohonenBuilder {
 	private int max_epchos = 100 ;
 	double maxVal = 1 ;
 	double minVal = 0 ;
-	double lambda = Float.parseFloat("0.02") ;//Float.valueOf("0.003") ;
-	double minimalLambda = Float.parseFloat("0.00000001") ;
-	double startLearningFactor = Float.parseFloat("0.02")  ;
+	double lambda = 0.02 ;//Float.valueOf("0.003") ;
+	double minimalLambda = 0.00000001 ;
+	double startLearningFactor = 0.02  ;
 	static double fatigueMaxLevel = 1 ;
 	static double fatigueMinLevel = 0.25/*(float)0.75*/ ;
 
-	public void setEpchosNumber(int epchos){
-		max_epchos = epchos ;
+	public void setEpchosNumber(int epchos) {
+		max_epchos = epchos;
 	}
-	public int getEpchosNumber(){
-		return max_epchos ;
+	public int getEpchosNumber() {
+		return max_epchos;
 	}
 	/**
 	 * Initialization of matrix filled with random numbers.
 	 * @param entries_num
 	 * @param neurons_num
 	 */
-	public void makeNetwork(int entries_num, int neurons_num){
-		neurons = Matrix.createRand(entries_num, neurons_num, Matrix.Custom, -1,1) ;
-		fatigue = Matrix.create(1, neurons_num,fatigueMaxLevel);
-		tempWins = Matrix.create(1, neurons_num,fatigueMaxLevel);   
-		distancesFromWinner = Matrix.create(1, neurons_num,fatigueMaxLevel); 
+	public void makeNetwork(int entries_num, int neurons_num) {
+		neurons = Matrix.createRand(entries_num, neurons_num, Matrix.Custom, -1, 1);
+		fatigue = Matrix.create(1, neurons_num, fatigueMaxLevel);
+		tempWins = Matrix.create(1, neurons_num, fatigueMaxLevel);   
+		distancesFromWinner = Matrix.create(1, neurons_num, fatigueMaxLevel); 
 	}
-	public void setWeightsMinMax(float min, float max){
-		maxVal = max ;
-		minVal = min ;
+	public void setWeightsMinMax(float min, float max) {
+		maxVal = max;
+		minVal = min;
 	}
 
 	/**
@@ -47,80 +47,93 @@ public class KohonenBuilder {
 	 * @param netWidth
 	 */
 	public void makeNetwork(int entries_num, int netHeight, int netWidth){
-		float vertiacalSpace = (float)((Math.abs(maxVal)+Math.abs(minVal))*Math.pow(netWidth, -1));
-		float horizontalSpace = (float)((Math.abs(maxVal)+Math.abs(minVal))*Math.pow(netHeight, -1));
-		System.out.println("IN vert="+vertiacalSpace+" hor="+horizontalSpace);
-		double[][] arr = new double[1][entries_num] ;
-		for(int i = 0 ; i<entries_num;i++){
-			arr[0][i] = minVal ;
+		double vertiacalSpace = ((Math.abs(maxVal) + Math.abs(minVal)) 
+				* Math.pow(netWidth, -1));
+		double horizontalSpace = ((Math.abs(maxVal) + Math.abs(minVal)) 
+				* Math.pow(netHeight, -1));
+		System.out.println("IN vert=" + vertiacalSpace + " hor=" + horizontalSpace);
+		double[][] arr = new double[1][entries_num];
+		for (int i = 0; i < entries_num; i++) {
+			arr[0][i] = minVal;
 		}
-		double xpos = minVal ;
-		double ypos = minVal ;
-		System.out.println("Minimal val:"+minVal);
+		double xpos = minVal;
+		double ypos = minVal;
+		System.out.println("Minimal val:" + minVal);
 
-		// TODO: dla n wyimarow chyba inaczej trza by to ustawiac a nie
-		// w jednej plaszczyznie ?
-		arr = new double[netHeight*netWidth][2] ;
-		for(int i=0;i<netHeight*netWidth;i++){
-			arr[i][0] = xpos ;
-			arr[i][1] = ypos ;
-			xpos += horizontalSpace ;
-			if(xpos>=maxVal){
-				xpos = minVal ;
-				ypos += vertiacalSpace ; 
+		arr = new double[netHeight * netWidth][2];
+		for (int i = 0; i < netHeight * netWidth; i++) {
+			arr[i][0] = xpos;
+			arr[i][1] = ypos;
+			xpos += horizontalSpace;
+			if (xpos >= maxVal) {
+				xpos = minVal;
+				ypos += vertiacalSpace;
 			}
 		}       
-		neurons = new Matrix(arr).transpose() ; 
-		System.out.println("Neurons:\n"+neurons.print()) ;
-		fatigue = Matrix.create(1, netHeight*netWidth,fatigueMaxLevel);
-		tempWins = Matrix.create(1, netHeight*netWidth,fatigueMaxLevel);   
-		distancesFromWinner = Matrix.create(1, netHeight*netWidth,fatigueMaxLevel); 
+		neurons = new Matrix(arr).transpose(); 
+		System.out.println("Neurons:\n" + neurons.print());
+		fatigue = Matrix.create(1, netHeight * netWidth, fatigueMaxLevel);
+		tempWins = Matrix.create(1, netHeight * netWidth, fatigueMaxLevel);   
+		distancesFromWinner = Matrix.create(1, netHeight * netWidth, fatigueMaxLevel);
 	}
 
 	public void start_learning(Matrix X){
 		// creating matrix for errors in each iteration 
 		error = Matrix.create(max_epchos, 1, -1);
-		float errSum ;
-		for(int i=0;i<max_epchos;i++){
-			errSum = 0 ;
-			if(lambda>minimalLambda)
-				//	lambda -= Float.parseFloat("0.01")*(i+1)/5 ;//max_epchos ; 
-				lambda = this.lambda - Float.parseFloat("0.001")*(i+1)/5 ;//max_epchos ; 
-			else
-				lambda = minimalLambda ; 
-			for(int colNum=0;colNum<X.getWidth();colNum++){
-				Matrix Xcol = X.getColumn(colNum) ;
-				Matrix neuronWeights ;
-				double distance = Float.POSITIVE_INFINITY ;
-				int winnerNumber = -1 ;
+		double errSum;
+		for (int i = 0; i < max_epchos; i++) {
+			errSum = 0;
+			if (lambda > minimalLambda) {
+				lambda = this.lambda - 0.001 * (i + 1) / 5; //max_epchos ; 
+			} else {
+				lambda = minimalLambda;
+			}
+			for (int colNum = 0; colNum < X.getWidth(); colNum++) {
+				Matrix Xcol = X.getColumn(colNum);
+				Matrix neuronWeights;
+				double distance = Float.POSITIVE_INFINITY;
+				int winnerNumber = -1;
 				// searching for winner 
-				for(int a=0;a<neurons.getHeigth();a++){
-					if(fatigue.getValue(0, a)<fatigueMinLevel)
-						continue ;
+				for (int a = 0; a < neurons.getHeigth(); a++) {
+					if (fatigue.getValue(0, a) < fatigueMinLevel) {
+						continue;
+					}
 					neuronWeights = neurons.getRow(a).transpose();
-					if(KohonenElements.distance(Xcol, neuronWeights)<distance){
+					if (KohonenElements.distance(Xcol, neuronWeights) < distance) {
 						distance = KohonenElements.distance(Xcol, neuronWeights);
-						winnerNumber = a ;
+						winnerNumber = a;
 					}
 				}
 				// fatiguing neurons and computing distance from winner
-				for(int a=0;a<neurons.getHeigth();a++){
+				for (int a = 0; a < neurons.getHeigth(); a++) {
 					// fatiguing the winner
-					if(a==winnerNumber) 
-						fatigue.setValue(0,winnerNumber, KohonenElements.fatigue(fatigue.getValue(0,winnerNumber), true, neurons.getHeigth()));
-					else // fatiguing the rest
-						fatigue.setValue(0,a, KohonenElements.fatigue(fatigue.getValue(0, a), false, neurons.getHeigth()));
-					distancesFromWinner.setValue(0, a, KohonenElements.distance(neurons.getRow(winnerNumber).transpose(), neurons.getRow(a).transpose()));
+					if (a == winnerNumber) {
+						fatigue.setValue(0, winnerNumber, 
+								KohonenElements.fatigue(fatigue.getValue(0, 
+										winnerNumber), 
+										true, neurons.getHeigth()));
+					} else { // fatiguing the rest
+						fatigue.setValue(0, a, 
+								KohonenElements.fatigue(fatigue.getValue(0, a), 
+										false, neurons.getHeigth()));
+					}
+					distancesFromWinner.setValue(0, a, 
+							KohonenElements.distance(neurons.getRow(winnerNumber).transpose(), 
+									neurons.getRow(a).transpose()));
 				}               
-				errSum = errSum + (float)Math.pow(KohonenElements.distance(Xcol, neurons.getRow(winnerNumber).transpose()),2) ;
-				tempWins.setValue(0, winnerNumber, tempWins.getValue(0,winnerNumber)+1) ;    
-				for(int actNeuron = 0 ; actNeuron<neurons.getHeigth();actNeuron++){
-					double distanceFromWinner = distancesFromWinner.getValue(0,actNeuron) ;//kohonenElements.distance(neurons.getRow(winnerNumber).transpose(), neurons.getRow(actNeuron).transpose());
+				errSum = errSum + Math.pow(KohonenElements.distance(Xcol, 
+						neurons.getRow(winnerNumber).transpose()), 2);
+				tempWins.setValue(0, winnerNumber, 
+						tempWins.getValue(0, winnerNumber) + 1);
+				for (int actNeuron = 0; actNeuron < neurons.getHeigth(); actNeuron++) {
+					double distanceFromWinner = distancesFromWinner.getValue(0, actNeuron); //kohonenElements.distance(neurons.getRow(winnerNumber).transpose(), neurons.getRow(actNeuron).transpose());
 					// computing distance between winner and actual neuron
-					double learningFactor = (1-distanceFromWinner)/12 ;// 42 OK
-					double neighborhood = KohonenElements.neighborhood(distanceFromWinner, lambda) ;
+					double learningFactor = (1 - distanceFromWinner) / 12;// 42 OK
+					double neighborhood = KohonenElements.neighborhood(distanceFromWinner, 
+							lambda);
 					// modifying weights
-					KohonenElements.weight(Xcol, neurons, actNeuron, learningFactor, neighborhood) ;
+					KohonenElements.weight(Xcol, neurons, 
+							actNeuron, learningFactor, neighborhood);
 				}
 			}
 			error.setValue(i, 0, errSum);

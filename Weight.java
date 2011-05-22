@@ -1,31 +1,31 @@
-
-import java.util.Random ;
+import java.util.Random;
 /**
  *
  * @author Berni
  */
 public class Weight {
-    Random rnd  ;
-    float min ;
-    float max ;
+    Random rnd;
+    double min;
+    double max;
     /** Creates a new instance of Weight */
     public Weight() {
-        rnd = new Random() ;
-        min = Float.parseFloat("-1") ;
-        max = Float.parseFloat("1"); ;
+        rnd = new Random();
+        min = -1;
+        max = 1;
     }
     public void setMinMax(int entries_to_neuron, int neurons_in_lay){
         // according to Ngueyn-Widorw
         // set min and max
-        max = Float.parseFloat(""+Math.pow(Math.pow(neurons_in_lay, -1), Math.pow(entries_to_neuron, -1))) ;
-        min = (-1)*max ;//Float.parseFloat(""+max+"*(-1)") ;
+        max = Math.pow(Math.pow(neurons_in_lay, -1),
+        		Math.pow(entries_to_neuron, -1));
+        min = (-1) * max;
     } 
     public void setMinMaxExitNeurons(){
-        max = Float.parseFloat("0.5");
-        min = Float.parseFloat("-0.5") ; 
+        max = 0.5;
+        min = -0.5;
     }
-    public float getNextWeight(){
-        return(float)( Matrix.normalizeValue(rnd.nextFloat(),0,1,min,max));
+    public double getNextWeight(){
+        return Matrix.normalizeValue(rnd.nextFloat(), 0, 1, min, max);
     }
     
 }
